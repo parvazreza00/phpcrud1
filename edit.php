@@ -1,21 +1,38 @@
 <?php
 include('database.php');
-if(isset($_POST['save'])){
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $city = $_POST['city'];
 
-    $sql = "INSERT INTO users(name, email, phone, city) VALUES('$name', '$email', '$phone', '$city')";
+if(isset($_GET['editid'])){
+    $editid = $_GET['editid'];
 
-    if(mysqli_query($conn, $sql)){
-        echo "Data insertd successfully!";
-        header('location:index.php');
-    }else{
-        echo "Data not insertd!";
+    $sql = "SELECT * FROM users WHERE id=$editid";
+    $query = mysqli_query($conn, $sql);
+
+    $data = mysqli_fetch_assoc($query);
+    $id = $data['id'];
+    $name = $data['name'];
+    $email = $data['email'];
+    $phone = $data['phone'];
+    $city = $data['city'];
+}
+
+    if(isset($_POST['edit'])){
+        $id = $_POST['id'];
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $city = $_POST['city'];
+
+        $sql1 = "UPDATE users SET name='$name', email='$email', phone='$phone', city='$city' WHERE id='$id'";
+        if(mysqli_query($conn, $sql1) == true){
+            echo "Data Updated";
+            header('location:view.php');
+        }else{
+            echo $sql1. ": Data not updated!";
+        }
     }
 
-}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -41,23 +58,23 @@ if(isset($_POST['save'])){
 	        </div>
             <form id="fupForm" name="form1" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                 <div class="form-floating mt-2">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" value="<?php echo $name ?>">
                     <label for="name" class="form-label">Name</label>
                 </div>
                 <div class="form-floating mt-2">
                     
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your Email">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your Email" value="<?php echo $email ?>">
                     <label for="email" class="form-label">Email</label>
                 </div>
                 <div class="form-floating mt-2">
                     
-                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your Phone Number">
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your Phone Number" value="<?php echo $phone ?>">
                     <label for="phone" class="form-label">Phone Number</label>
                 </div>
                 <div class="form-floating mt-2">
                     
                     <select name="city" id="city" class="form-control">
-                        <option value="">Select City</option>
+                        <option >Select City</option>
                         <option value="Dhaka">Dhaka</option>
                         <option value="Chattagram">Chattagram</option>
                         <option value="Rajshahi">Rajshahi</option>
@@ -70,7 +87,8 @@ if(isset($_POST['save'])){
                     <label for="city" class="form-label">City Name</label>
                 </div>
                 <!-- <input id="submit" type="button" class="btn-submit btn btn-primary" value="Submit" /> -->
-                <input type="submit" name="save" id="butsave" class="btn btn-primary mt-3" value="Save to database">
+                <input type="submit" name="edit" id="butsave" class="btn btn-primary mt-3" value="Update">
+                <input type="text" name="id" value="<?php echo $id; ?>" hidden>
                 <a href="view.php" class="btn btn-info float-end mt-3">Show Data</a>
             </form>
         </div>
